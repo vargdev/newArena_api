@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20210718194053 extends AbstractMigration
+final class Version20210724183538 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,7 +20,7 @@ final class Version20210718194053 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE store (id INT AUTO_INCREMENT NOT NULL, item_id INT NOT NULL, quantity INT NOT NULL, price INT NOT NULL, bought_at DATETIME NOT NULL, UNIQUE INDEX UNIQ_FF575877126F525E (item_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE store (id INT AUTO_INCREMENT NOT NULL, item_id INT NOT NULL, quantity INT DEFAULT 0 NOT NULL, price INT NOT NULL, UNIQUE INDEX UNIQ_FF575877126F525E (item_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE store ADD CONSTRAINT FK_FF575877126F525E FOREIGN KEY (item_id) REFERENCES item (id)');
     }
 

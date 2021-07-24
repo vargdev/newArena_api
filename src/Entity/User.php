@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
- *
- * @ApiResource()
- * @ApiFilter(SearchFilter::class, properties={"email"})
  **/
+#[ApiResource]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public const SUPER_ADMIN_ROLE = 'ROLE_SUPER_ADMIN';
+    public const ADMIN_ROLE = 'ROLE_ADMIN';
+    public const USER_ROLE = 'ROLE_USER';
 
     /**
      * @ORM\Id
@@ -45,6 +43,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string")
      */
     private string $password;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Hero::class, mappedBy="user", cascade={"persist", "remove"})
+     */
+    private Hero $hero;
+
+    public function __construct()
+    {
+        $this->hero = new Hero();
+    }
 
     public function getId(): ?int
     {
@@ -141,5 +149,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getHero(): ?Hero
+    {
+        return $this->hero;
+    }
+
+    public function setHero(Hero $hero): self
+    {
+        // set the owning side of the relation if necessary
+        if ($hero->getUser() !== $this) {
+            $hero->setUser($this);
+        }
+
+        $this->hero = $hero;
+
+        return $this;
     }
 }

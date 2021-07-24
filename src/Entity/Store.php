@@ -1,13 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
-use DateTimeZone;
-use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\StoreRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * @ORM\Entity(repositoryClass=StoreRepository::class)
@@ -23,7 +22,8 @@ class Store
     private ?int $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"default": 0})
+     *
      */
     private ?int $quantity;
 
@@ -31,11 +31,6 @@ class Store
      * @ORM\Column(type="integer")
      */
     private ?int $price;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private ?DateTimeInterface $boughtAt;
 
     /**
      * @ORM\OneToOne(targetEntity=Item::class, inversedBy="store", cascade={"persist", "remove"})
@@ -68,22 +63,6 @@ class Store
     public function setPrice(int $price): self
     {
         $this->price = $price;
-
-        return $this;
-    }
-
-    public function getBoughtAt(): ?DateTimeInterface
-    {
-        return $this->boughtAt;
-    }
-
-    /**
-     * @ORM\PrePersist()
-     * @throws \Exception
-     */
-    public function setBoughtAt(): self
-    {
-        $this->boughtAt = new DateTime('now', new DateTimeZone('Europe/Kiev'));
 
         return $this;
     }
