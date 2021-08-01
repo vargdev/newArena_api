@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Bag;
 use App\Entity\Hero;
 use App\Entity\HeroStat;
 use App\Entity\User;
@@ -52,6 +53,7 @@ class UserService
         $user->setHero(new Hero());
         $user->getHero()->setUsername($username);
         $user->getHero()->setHeroStat(new HeroStat());
+        $user->getHero()->setBag(new Bag());
 
         $this->userRepository->save($user);
     }

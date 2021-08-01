@@ -112,18 +112,13 @@ class Hero
 
     public function setHeroStat(HeroStat $heroStat): self
     {
-        // unset the owning side of the relation if necessary
         if ($heroStat === null && $this->heroStat !== null) {
             $this->heroStat->setHero(null);
         }
 
-        // set the owning side of the relation if necessary
         if ($heroStat !== null && $heroStat->getHero() !== $this) {
             $heroStat->setHero($this);
         }
-
-//        $this->heroStat = $heroStat;
-//        $heroStat->setHero($this);
 
         $this->heroStat = $heroStat;
 

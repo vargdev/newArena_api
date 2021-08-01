@@ -18,9 +18,6 @@ class StoreService
         $this->em = $em;
     }
 
-     ///////////////////////
-    /// JUST AN EXAMPLE ///
-   ///////////////////////
     public function checkItem(
       int $id
     ): ?Item {

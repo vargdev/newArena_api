@@ -6,6 +6,8 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ItemRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -48,6 +50,16 @@ class Item
      * @ORM\OneToOne(targetEntity=Store::class, mappedBy="item", cascade={"persist", "remove"})
      */
     private ?Store $store;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Bag::class, mappedBy="item")
+     */
+    private $bag;
+
+    public function __construct()
+    {
+        $this->bag = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -103,6 +115,33 @@ class Item
         }
 
         $this->store = $store;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Bag[]
+     */
+    public function getBag(): Collection
+    {
+        return $this->bag;
+    }
+
+    public function addBag(Bag $bag): self
+    {
+        if (!$this->bag->contains($bag)) {
+            $this->bag[] = $bag;
+            $bag->addItem($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBag(Bag $bag): self
+    {
+        if ($this->bag->removeElement($bag)) {
+            $bag->removeItem($this);
+        }
 
         return $this;
     }
