@@ -52,14 +52,9 @@ class Item
     private ?Store $store;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Bag::class, mappedBy="item")
+     * @ORM\OneToMany(targetEntity=BagItem::class, mappedBy="item", cascade={"persist", "remove"})
      */
-    private $bag;
-
-    public function __construct()
-    {
-        $this->bag = new ArrayCollection();
-    }
+    private Collection $bagItems;
 
     public function getId(): ?int
     {
@@ -109,7 +104,6 @@ class Item
 
     public function setStore(Store $store): self
     {
-        // set the owning side of the relation if necessary
         if ($store->getItem() !== $this) {
             $store->setItem($this);
         }
@@ -119,28 +113,27 @@ class Item
         return $this;
     }
 
-    /**
-     * @return Collection|Bag[]
-     */
-    public function getBag(): Collection
+    public function getBagItems(): Collection
     {
-        return $this->bag;
+        return $this->bagItems;
     }
 
-    public function addBag(Bag $bag): self
+    public function addBagItem(BagItem $bagItem): self
     {
-        if (!$this->bag->contains($bag)) {
-            $this->bag[] = $bag;
-            $bag->addItem($this);
+        if (!$this->bagItems->contains($bagItem)) {
+            $this->bagItems[] = $bagItem;
+            $bagItem->setItem($this);
         }
 
         return $this;
     }
 
-    public function removeBag(Bag $bag): self
+    public function removeBagItem(BagItem $bagItem): self
     {
-        if ($this->bag->removeElement($bag)) {
-            $bag->removeItem($this);
+        if ($this->bagItems->removeElement($bagItem)) {
+            if ($bagItem->getItem() === $this) {
+                $bagItem->setItem(null);
+            }
         }
 
         return $this;

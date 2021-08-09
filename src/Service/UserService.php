@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Entity\Bag;
 use App\Entity\Hero;
+use App\Entity\BagItem;
 use App\Entity\HeroStat;
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -15,7 +16,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
  * Class UserService
  * @package App\Service
  */
-class UserService
+class UserService /*implements UserInterface*/
 {
     public function __construct(
         private UserRepository $userRepository,
@@ -50,10 +51,19 @@ class UserService
             $user->addRole(User::USER_ROLE);
         }
 
-        $user->setHero(new Hero());
+        if ($user->getHero() === null) {
+            $user->setHero(new Hero());
+        }
+
         $user->getHero()->setUsername($username);
-        $user->getHero()->setHeroStat(new HeroStat());
-        $user->getHero()->setBag(new Bag());
+        if ($user->getHero()->getHeroStat() !== null) {
+            $user->getHero()->setHeroStat(new HeroStat());
+            $user->getHero()->setUser($user);
+        }
+
+        if ($user->getHero()->getBag() !== null) {
+            $user->getHero()->setBag(new Bag());
+        }
 
         $this->userRepository->save($user);
     }

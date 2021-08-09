@@ -9,6 +9,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -39,6 +40,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     /**
+     * @Assert\Length(
+     *     min = 8,
+     *
+     *     minMessage = "Password must be at least {{ limit }} characters long",
+     * )
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
@@ -47,12 +53,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\OneToOne(targetEntity=Hero::class, mappedBy="user", cascade={"persist", "remove"})
      */
-    private Hero $hero;
-
-    public function __construct()
-    {
-        $this->hero = new Hero();
-    }
+    private ?Hero $hero = null;
 
     public function getId(): ?int
     {
@@ -95,7 +96,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -147,8 +147,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials()
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+         $this->plainPassword = null;
     }
 
     public function getHero(): ?Hero
@@ -158,7 +157,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setHero(Hero $hero): self
     {
-        // set the owning side of the relation if necessary
         if ($hero->getUser() !== $this) {
             $hero->setUser($this);
         }

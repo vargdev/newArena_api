@@ -25,7 +25,7 @@ class Hero
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="hero", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user;
+    private ?User $user = null;
 
     /**
      * @ORM\Column(type="string", length=63)
@@ -47,9 +47,16 @@ class Hero
      */
     private ?HeroStat $heroStat = null;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Bag::class, mappedBy="hero", cascade={"persist", "remove"})
+     */
+    private ?Bag $bag = null;
+
     public function __construct()
     {
         $this->heroStat = new HeroStat();
+        $this->user = new User();
+        $this->bag = new Bag();
     }
     
     public function getId(): ?int
@@ -121,6 +128,26 @@ class Hero
         }
 
         $this->heroStat = $heroStat;
+
+        return $this;
+    }
+
+    public function getBag(): ?Bag
+    {
+        return $this->bag;
+    }
+
+    public function setBag(?Bag $bag): self
+    {
+        if ($bag === null && $this->bag !== null) {
+            $this->bag->setHero(null);
+        }
+
+        if ($bag !== null && $bag->getHero() !== $this) {
+            $bag->setHero($this);
+        }
+
+        $this->bag = $bag;
 
         return $this;
     }
